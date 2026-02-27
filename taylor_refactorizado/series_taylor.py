@@ -48,7 +48,7 @@ def calcular_serie_taylor():
         
         # Punto de expansión
         a_input = input("Punto de expansión a (por defecto 0): ").strip()
-        a = sp.sympify(a_input) if a_input != "" else 0
+        a = sp.nsimplify(sp.sympify(a_input)) if a_input != "" else 0
         
         # Orden
         n_input = input("Orden del polinomio (por defecto 5): ").strip()
@@ -70,7 +70,7 @@ def calcular_serie_taylor():
             if evaluar != "s":
                 break
             val_input = input(f"Valor de {var_input}: ").strip()
-            val = sp.sympify(val_input)
+            val = sp.nsimplify(sp.sympify(val_input))
             
             valor_real = f.subs(x, val).evalf()
             valor_aprox = polinomio.subs(x, val).evalf()
