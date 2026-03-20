@@ -1,3 +1,4 @@
+import sympy as sp
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -22,11 +23,16 @@ def graficar_funcion(f, x_inicio, x_fin, num_puntos=1000, titulo="Gráfica de la
     # Crear el subconjunto de puntos x
     # Añadimos un pequeño "epsilon" si queremos evitar evaluación exacta en singularidades, 
     # pero np.linspace es generalmente confiable.
-    x = np.linspace(x_inicio, x_fin, num_puntos)
+    x_vals = np.linspace(x_inicio, x_fin, num_puntos)
+
+    # Si f es una expresión simbólica de SymPy, convertirla a función evaluable
+    if isinstance(f, sp.Basic):
+        sym_var = list(f.free_symbols)[0]  # obtiene la variable simbólica (ej. x)
+        f = sp.lambdify(sym_var, f, 'numpy')
     
     # Evaluar la función de forma segura (vectorizada o iterativa)
-    y = np.zeros_like(x)
-    for i, val in enumerate(x):
+    y = np.zeros_like(x_vals)
+    for i, val in enumerate(x_vals):
         try:
             y[i] = f(val)
         except Exception:
@@ -36,7 +42,7 @@ def graficar_funcion(f, x_inicio, x_fin, num_puntos=1000, titulo="Gráfica de la
     fig, ax = plt.subplots(figsize=(10, 6), dpi=120)
     
     # Graficar la línea principal
-    ax.plot(x, y, color='#2E86AB', linewidth=2.5, label='f(x)')
+    ax.plot(x_vals, y, color='#2E86AB', linewidth=2.5, label='f(x)')
     
     # Dibujar los ejes coordenados (cruz cruzando por 0,0) si se solicitó
     if mostrar_ejes:
@@ -63,13 +69,13 @@ def graficar_funcion(f, x_inicio, x_fin, num_puntos=1000, titulo="Gráfica de la
     ax.grid(True, linestyle='--', alpha=0.7)
     
     # Añadir sombra o relleno entre la curva y el eje x (opcional, le da un toque muy pro)
-    ax.fill_between(x, y, 0, where=(np.isfinite(y)), color='#2E86AB', alpha=0.1)
+    ax.fill_between(x_vals, y, 0, where=(np.isfinite(y)), color='#2E86AB', alpha=0.1)
     
     plt.tight_layout()
     plt.show()
 
-# if __name__ == "__main__":
-#     # Prueba del graficador
-#     f_prueba = lambda x: x**2 - 4
-#     graficar_funcion(f_prueba, -3, 3, titulo="Prueba del Graficador Pro: f(x) = x^2 - 4", 
-#                      puntos_destacados=[(-2, 0), (2, 0)])
+if __name__ == "__main__":
+    # Prueba del graficador
+    x = sp.symbols('x')
+    f_prueba = sp.ln(x**2 +1) - sp.exp((0.4)*x)*sp.cos(sp.pi*x)
+    graficar_funcion(f_prueba, -10, 10, titulo=f"Prueba del Graficador Pro: f(x) ={f_prueba}")
