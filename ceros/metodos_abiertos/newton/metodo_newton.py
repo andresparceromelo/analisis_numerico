@@ -8,4 +8,4 @@ def newton_rapshon(funcion,x0,tolerancia,x):
         iteraciones += 1
         x0 = x1
         x1 = x0 - (funcion.evalf(subs={x: x0}) / derivada_funcion.evalf(subs={x: x0}))
-    return iteraciones, x1
+    return x1
